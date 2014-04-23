@@ -5,6 +5,18 @@
 
 makeCacheMatrix <- function(x = matrix()) {
 
+  
+  m <<- NULL
+  set <- function(y) {
+    x <<- y
+    m <<- NULL
+  }
+  
+  setInv <- function(MInv) m <<- MInv
+  get <- function() x
+  getInv <- function() m
+  list (set = set, setInv = setInv, get = get, getInv = getInv)
+  
 }
 
 
@@ -12,4 +24,24 @@ makeCacheMatrix <- function(x = matrix()) {
 
 cacheSolve <- function(x, ...) {
         ## Return a matrix that is the inverse of 'x'
+  
+  m <- x$getInv()
+  if(!is.null(m)) {
+    message("getting cached data")
+    return(m)
+  }
+  
+  data <- x$get()
+  datarow = nrow(data)
+  datacol = ncol(data)
+  
+  if (datarow == datacol){
+    m <- solve(data)
+  } else { 
+    message("MASS library required")
+    m <- ginv(data)
+  }
+  
+  x$setInv(m)
+  m
 }
